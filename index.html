@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta Information -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telephony Infra Availability</title>
+    <link rel="icon" type="image/x-icon" href="/public/favicon.png">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-geoman-free/2.14.0/leaflet-geoman.css" />
+    <link rel="stylesheet" href="style.css"> <!-- Link to the external CSS file -->
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-geoman-free/2.14.0/leaflet-geoman.min.js" defer></script>
+    <script src="script.js" type="module" defer></script>
+</head>
+<body>
+    <!-- Error Banner -->
+    <div id="error-banner" class="banner hidden"></div>
+
+    <!-- Header Section -->
+    <header class="header-container">
+        <h1>Telephony Infra Availability</h1>
+        <div id="red-banner" class="banner hidden">
+            <p id="red-countries-text"></p>
+        </div>
+        <button id="toggle-dark-mode" onclick="toggleDarkMode()" title="Toggle Dark Mode">
+            <i class="fas fa-moon"></i> Dark Mode
+        </button>
+    </header>
+
+    <!-- User Controls Section -->
+    <section class="controls-container">
+        <div class="login-container">
+            <button id="refresh-btn" onclick="refreshStatuses()" title="Refresh Page">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+            <p id="next-refresh-timer">Time to next refresh: <span id="next-refresh">5:00</span></p>
+            <button id="login-btn" onclick="showLoginModal()">Login</button>
+            <button id="logout-btn" class="hidden" onclick="logout()">Logout</button>
+            <span id="logged-in-info" class="hidden"></span>
+        </div>
+
+        <button id="toggle-legend-btn" onclick="toggleLegend()">Show Legend</button>
+    </section>
+
+    <!-- Legend Section -->
+    <section id="legend-container" class="hidden">
+        <div class="legend-content">
+            <div><span class="legend-icon" style="background-color: #28a745;"></span> Green - Available</div>
+            <div><span class="legend-icon" style="background-color: #ffc107;"></span> Yellow - Intermittent Issues</div>
+            <div><span class="legend-icon" style="background-color: #dc3545;"></span> Red - Outage/Unavailable</div>
+            <div><span class="legend-icon" style="background-color: #D3D3D3;"></span> NC - Not covered by IWG Direct</div>
+            <div><span class="legend-icon" style="background-color: #4682B4;"></span> AL - Answered Locally</div>
+        </div>
+    </section>
+
+    <!-- Filters Section -->
+    <section id="filters">
+        <!-- List View Filters -->
+        <div id="filters-container" class="filters-container">
+            <input id="country-filter" placeholder="Search by Country" onkeyup="applyFilters()"/>
+            <select id="region-filter" onchange="applyFilters()">
+                <option value="">Filter by Region</option>
+                <option value="EMEA">EMEA</option>
+                <option value="AMERICAS">AMERICAS</option>
+                <option value="APAC">APAC</option>
+            </select>
+            <select id="status-filter" onchange="applyFilters()">
+                <option value="">Filter by Status</option>
+                <option value="green">Green</option>
+                <option value="yellow">Yellow</option>
+                <option value="red">Red</option>
+            </select>
+            <button onclick="clearFilters()"><i class="fas fa-eraser"></i></button>
+        </div>
+
+        <!-- Map View Filters -->
+        <div id="map-filters" class="map-filters">
+            <input id="map-country-filter" placeholder="Search by country" oninput="filterMapByCountry()"/>
+            <button onclick="clearMapFilter()"><i class="fas fa-eraser"></i></button>
+        </div>
+
+        <!-- Historic View Filters -->
+        <div id="historic-filters-container" class="historic-filters-container hidden">
+            <select id="historic-time-filter" onchange="applyHistoricFilters()">
+                <option value="1">Last Hour</option>
+                <option value="4">Last 4 Hours</option>
+                <option value="8">Last 8 Hours</option>
+                <option value="24">Last 24 Hours</option>
+                <option value="48">Last 2 Days</option>
+                <option value="120">Last 5 Days</option>
+            </select>
+            <input id="historic-country-filter" placeholder="Search by Country" onkeyup="applyHistoricFilters()"/>
+            <button onclick="clearHistoricFilters()"><i class="fas fa-eraser"></i></button>
+        </div>
+    </section>
+
+   <!-- View Switch Buttons -->
+   <div class="view-switch">
+        <button onclick="showListView()" title="List View">
+            <i class="fas fa-list"></i>
+        </button>    
+        <button onclick="showMapView()" title="Map View">
+            <i class="fas fa-map"></i>
+        </button>
+        <button onclick="showHistoricView()" title="Last 24 Hours">
+            <i class="fas fa-clock"></i>
+        </button>
+    </div>
+    
+    <!--Last refresh date/time-->
+    <div id="refresh-info">
+        <p>Last refreshed: <span id="last-refresh">Never</span></p>
+    </div>
+
+    <!-- Main Content Section -->
+    <section id="content">
+        <!-- List View -->
+        <table id="status-table">
+            <thead>
+                <tr>
+                    <th onclick="sortTable('country')">Country &#x25B2;</th>
+                    <th onclick="sortTable('region')">Region &#x25B2;</th>
+                    <th onclick="sortTable('status')">Status &#x25B2;</th>
+                    <th onclick="sortTable('last_updated')">Last Updated &#x25B2;</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <!-- Map View -->
+        <div id="map-container"></div>
+
+        <!-- Historic View -->
+        <div id="historic-container" class="hidden">
+            <h2>Last 5 Days Status Changes</h2>
+            <table id="historic-table">
+                <thead>
+                    <tr>
+                        <th onclick="sortHistoricTable('country')"> Country &#x25B2;</th>
+                        <th onclick="sortHistoricTable('status')"> Status &#x25B2;</th>
+                        <th onclick="sortHistoricTable('status_start')"> Start Time &#x25B2;</th>
+                        <th onclick="sortHistoricTable('status_end')"> End Time &#x25B2;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Content populated dynamically -->
+                </tbody>
+            </table>
+        </div>
+
+    <!-- Refresh Info -->
+    <footer>
+    </footer>
+</body>
+</html>

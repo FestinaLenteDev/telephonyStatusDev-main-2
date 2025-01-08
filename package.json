@@ -1,0 +1,24 @@
+{
+  "name": "your-project-name",
+  "version": "1.0.0",
+  "description": "Your project description",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mssql": "^11.0.1"
+  },
+  "devDependencies": {
+    "vite": "^6.0.4"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

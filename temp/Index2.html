@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-geoman-free/2.14.0/leaflet-geoman.min.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-geoman-free/2.14.0/leaflet-geoman.css" />
+    <link rel="stylesheet" href="style.css"> <!-- Link to the external CSS file -->
+    <script src="script.js" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telephony Infra Availability</title>
+</head>
+<body>
+    <div class="header-container">
+        <div id="error-banner" style="
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: #dc3545;
+        color: white;
+        text-align: center;
+        padding: 10px;
+        z-index: 1000;
+    "></div>
+            <h1>Telephony Infra Availability</h1>
+        <div id="red-banner" class="hidden">
+            <p id="red-countries-text"></p>
+        </div>
+        
+        <div class="view-switch">
+            <button id="toggle-dark-mode" onclick="toggleDarkMode()" title="Toggle Dark Mode">
+                <i class="fas fa-moon"></i> Dark Mode
+            </button>
+        </div>
+        
+    </div>
+    
+    <div class="login-container">
+        <button id="refresh-btn" onclick="refreshStatuses()" title="Refresh Page">
+            <i class="fas fa-sync-alt"></i>
+        </button>
+        <p id="next-refresh-timer" style="font-size: 14px; color: #555;">
+            Time to next refresh: <span id="next-refresh">5:00</span>
+        </p>
+        <button id="login-btn" onclick="showLoginModal()" title="Login">Login</button>
+        <button id="logout-btn" class="hidden" onclick="logout()" title="Logout">Logout</button>
+        
+        <span id="logged-in-info" class="hidden"></span>
+    </div>
+
+    <div class="view-switch">
+        <!-- Show/Hide Legend Button -->
+        <button id="toggle-legend-btn" onclick="toggleLegend()" title="Show/Hide Legend">
+            <i class="fas fa-info-circle"></i> Show Legend
+        </button>
+    </div>
+
+    <!-- Legend Section -->
+    <div id="legend-container" class="hidden">
+        <div class="legend-content">
+            <div><span class="legend-icon" style="background-color: #28a745;"></span> Green - Available</div>
+            <div><span class="legend-icon" style="background-color: #ffc107;"></span> Yellow - Intermittent Issues</div>
+            <div><span class="legend-icon" style="background-color: #dc3545;"></span> Red - Outage/Unavailable</div>
+            <div><span class="legend-icon" style="background-color: #D3D3D3;"></span> NC - Not covered by IWG Direct</div>
+            <div><span class="legend-icon" style="background-color: #4682B4;"></span> AL - Answered Locally</div>
+        </div>
+    </div>
+
+    <!-- Filters for Map View -->
+<div class="map-filters">
+    <div id="map-filters" style="display: none;">
+        <input 
+            type="text" 
+            id="map-country-filter" 
+            placeholder="Type country name..." 
+            oninput="filterMapByCountry()" 
+            style="padding: 5px; width: 250px; border: 1px solid #ccc; border-radius: 5px;" 
+        />
+        <button onclick="clearMapFilter()" title="Clear Filter" style="padding: 5px; background: #f8f9fa; border: 1px solid #ccc; border-radius: 5px; cursor: pointer;">
+            <i class="fas fa-eraser"></i>
+        </button>
+    </div>
+</div>
+
+<!-- Filters for List View-->
+<div class="filters-container">
+    <div id="filters-container">
+        <input
+            type="text"
+            id="country-filter"
+            placeholder="Search by Country"
+            onkeyup="applyFilters()"
+            title="Filter by Country"
+        />
+        <select id="region-filter" onchange="applyFilters()" title="Filter by Region">
+            <option value="">Filter by Region</option>
+            <option value="EMEA">EMEA</option>
+            <option value="AMERICAS">AMERICAS</option>
+            <option value="APAC">APAC</option>
+        </select>
+        <select id="status-filter" onchange="applyFilters()" title="Filter by Status">
+            <option value="">Filter by Status</option>
+            <option value="green">Green</option>
+            <option value="yellow">Yellow</option>
+            <option value="red">Red</option>
+            <option value="not covered by IWG Direct">Not Covered</option>
+            <option value="answered locally">Answered Locally</option>
+        </select>
+        <button onclick="clearFilters()" title="Clear Filters">
+            <i class="fas fa-eraser"></i>
+        </button>
+    </div>
+</div>
+
+<!--Filters for historic view-->
+    <!-- Historic Container: Last 5 Days Status Changes -->
+<div class="historic-filters-container">
+    <div id="historic-filters-container" style="display: none;">
+    <label for="historic-time-filter">Filter by period:</label>
+    <select id="historic-time-filter" onchange="applyHistoricFilters()">
+        <option value="1">Last Hour</option>
+        <option value="4">Last 4 Hours</option>
+        <option value="8">Last 8 Hours</option>
+        <option value="24">Last 24 Hours</option>
+        <option value="48">Last 2 Days</option>
+        <option value="120" selected>Last 5 Days</option> <!-- Default -->
+    </select>
+        <!-- Country Historic Filter -->
+     <input
+         type="text"
+         id="historic-country-filter"
+         placeholder="Search by Country"
+         onkeyup="applyHistoricFilters()"
+         title="Filter by Country"
+     />
+ 
+     <!-- Clear Historic Filters Button -->
+     <button onclick="clearHistoricFilters()" title="Clear Filters">
+        <i class="fas fa-eraser"></i> </button>
+    </div>
+</div>
+
+
+<!--switch view buttons-->
+    <div class="view-switch">
+        <button onclick="showListView()" title="List View">List View</button>
+        <button onclick="showMapView()" title="Map View">Map View</button>
+        <button onclick="showHistoricView()">Last 24 Hours</button>
+
+    </div>
+   
+
+    <div id="refresh-info">
+        <p>Last refreshed: <span id="last-refresh">Never</span></p>
+    </div>
+
+    <table id="status-table">
+        <thead>
+            <tr>
+                <th onclick="sortTable('country')">Country &#x25B2;</th>
+                <th onclick="sortTable('region')">Region &#x25B2;</th>
+                <th onclick="sortTable('status')">Status &#x25B2;</th>
+                <th onclick="sortTable('last_updated')">Last Updated &#x25B2;</th> <!-- New Column -->
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Table content dynamically populated -->
+        </tbody>
+    </table>
+    
+
+    <div id="map-container" style="display: none; height: 500px; width: 100%;"></div>
+
+
+
+
+<div id="historic-container" class="hidden">
+    <h2>Last 5 Days Status Changes</h2>
+    <table id="historic-table">
+        <thead>
+            <tr>
+                <th>Country</th>
+                <th>Status</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Content populated dynamically -->
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

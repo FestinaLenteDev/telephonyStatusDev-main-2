@@ -1,0 +1,394 @@
+/* General Styles for Body */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    line-height: 1.6;
+}
+
+/* Header Section */
+h1 {
+    text-align: center;
+    font-size: 2rem;
+    margin: 10px 0;
+}
+
+/* Login and Refresh Container */
+.login-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end; /* Align items to the right */
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.login-container p {
+    margin: 0;
+    font-size: 14px;
+    color: #555;
+}
+
+.login-container button {
+    padding: 5px 10px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    white-space: nowrap; /* Prevent button text from wrapping */
+}
+
+.login-container button:hover {
+    background: #0056b3;
+}
+
+/* Responsive Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    overflow-x: auto;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+th {
+    background: #f4f4f4;
+}
+
+/* Map and Filters */
+.map-filters {
+    text-align: center;
+    margin-bottom: 10px;
+    display: none;
+}
+.map-filters input {
+    padding: 5px;
+    width: 250px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+.filters-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap; /* Wrap elements to avoid overflow */
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
+#map-container {
+    display: none;
+    height: 500px;
+    width: 100%;
+}
+
+/* Responsive Layout Adjustments */
+@media screen and (max-width: 768px) {
+    .login-container {
+        flex-direction: column;
+        align-items: flex-end; /* Align buttons on smaller screens */
+        text-align: right;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+
+    .filters-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #refresh-info {
+        text-align: center;
+    }
+
+    table {
+        font-size: 12px; /* Adjust table font size */
+    }
+}
+
+@media screen and (max-width: 480px) {
+    body {
+        margin: 10px;
+    }
+
+    .login-container {
+        align-items: center;
+    }
+
+    h1 {
+        font-size: 1.2rem;
+    }
+
+    .login-container button {
+        font-size: 12px;
+        padding: 5px;
+    }
+}
+/* Centered Header */
+.header-container {
+    text-align: center; /* Centers the title horizontally */
+    margin-bottom: 10px;
+}
+
+h1 {
+    font-size: 2rem; /* Adjust title size as needed */
+    margin: 0; /* Remove default margins */
+}
+
+/* For smaller screens, ensure the title remains centered */
+@media screen and (max-width: 768px) {
+    h1 {
+        font-size: 1.5rem;
+    }
+}
+th {
+    cursor: pointer;
+}
+.status-legend {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #333;
+}
+
+.status-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+}
+/* Legend Container */
+#legend-container {
+    display: none;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.legend-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.legend-content div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.legend-icon {
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    border-radius: 50%;
+    border: 1px solid #333;
+}
+
+#toggle-legend-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#toggle-legend-btn:hover {
+    background: #0056b3;
+}
+
+/* map filter field */
+#map-country-filter {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 300px;
+    outline: none;
+}
+
+#map-country-filter:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Default Light Theme */
+body {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+h1 {
+    color: #333333;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #dddddd;
+    text-align: left;
+}
+
+th {
+    background-color: #f4f4f4;
+    color: #333333;
+}
+
+button {
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Dark Mode */
+body.dark-mode {
+    background-color: #121212;
+    color: #f5f5f5;
+}
+
+h1.dark-mode, th.dark-mode, td.dark-mode {
+    color: #ffffff;
+}
+
+table.dark-mode {
+    border-color: #444444;
+}
+
+th.dark-mode {
+    background-color: #333333;
+    color: #f5f5f5;
+    border: 1px solid #444444;
+}
+
+td.dark-mode {
+    background-color: #222222;
+    border: 1px solid #444444;
+}
+
+button.dark-mode {
+    background-color: #333333;
+    color: #f5f5f5;
+    border: 1px solid #444444;
+}
+
+button.dark-mode:hover {
+    background-color: #555555;
+}
+
+#map-container.dark-mode {
+    filter: invert(0.9) hue-rotate(180deg);
+}
+
+#legend-container.dark-mode {
+    background-color: #333333;
+    color: #f5f5f5;
+    border: 1px solid #444444;
+}
+
+/* Red Banner Styling */
+#red-banner {
+    background-color: #dc3545; /* Red background */
+    color: #ffffff; /* White text */
+    text-align: center;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+#red-banner.hidden {
+    display: none; /* Hide when there are no red countries */
+}
+/* Ensure buttons remain blue in dark mode */
+button {
+    background-color: #007bff; /* Blue color */
+    color: white; /* White text */
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3; /* Slightly darker blue on hover */
+}
+
+/* Specifically target dark mode */
+@media (prefers-color-scheme: dark) {
+    button {
+        background-color: #007bff !important; /* Force blue background */
+        color: white !important; /* Force white text */
+    }
+}
+.historic-filters-container {
+    margin: 10px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.historic-filters-container select {
+    padding: 5px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+#historic-clear-filters-btn {
+    padding: 5px 10px;
+    font-size: 14px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#historic-clear-filters-btn:hover {
+    background-color: #0056b3;
+}
+.clear-button {
+    padding: 5px;
+    background: #f8f9fa;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+}
+

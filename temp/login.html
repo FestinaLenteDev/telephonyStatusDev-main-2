@@ -1,0 +1,18 @@
+<div class="filters-container">
+    <select id="country-filter" onchange="applyFilters()">
+        <option value="">Filter by Country</option>
+    </select>
+    <select id="region-filter" onchange="applyFilters()">
+        <option value="">Filter by Region</option>
+        <option value="EMEA">EMEA</option>
+        <option value="AMERICAS">AMERICAS</option>
+        <option value="APAC">APAC</option>
+    </select>
+    <select id="status-filter" onchange="applyFilters()">
+        <option value="">Filter by Status</option>
+        <option value="green">Green</option>
+        <option value="yellow">Yellow</option>
+        <option value="red">Red</option>
+    </select>
+    <button onclick="clearFilters()">Clear Filters</button>
+</div>
